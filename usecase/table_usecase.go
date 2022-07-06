@@ -7,7 +7,8 @@ import (
 
 type TableUseCaseInterface interface {
 	GetTable(t *entity.Table) error
-	UpdateTable(t *entity.Table, isAvailable bool) error
+	UpdateTable(t *entity.Table) error
+	UpdateTableAvailability(t *entity.Table, isAvailable bool) error
 	DeleteTable(t *entity.Table) error
 	CreateTable(t *entity.Table) error
 }
@@ -29,7 +30,11 @@ func (tu *tableUseCase) GetTable(t *entity.Table) error {
 	return nil
 }
 
-func (tu *tableUseCase) UpdateTable(t *entity.Table, isAvailable bool) error {
+func (tu *tableUseCase) UpdateTable(t *entity.Table) error {
+	return tu.repo.Update(t)
+}
+
+func (tu *tableUseCase) UpdateTableAvailability(t *entity.Table, isAvailable bool) error {
 	t.IsAvailable = isAvailable
 	return tu.repo.Update(t)
 }

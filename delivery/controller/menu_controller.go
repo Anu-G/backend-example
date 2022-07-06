@@ -26,7 +26,7 @@ func NewMenuController(router *gin.Engine, uc usecase.MenuUseCaseInterface) *Men
 	routeMenu.GET("/", controller.getMenuById)
 	routeMenu.PUT("/", controller.updateMenu)
 	routeMenu.DELETE("/", controller.deleteMenu)
-	routeMenu.POST("/regsiter", controller.createMenu)
+	routeMenu.POST("/register", controller.createMenu)
 
 	return &controller
 }

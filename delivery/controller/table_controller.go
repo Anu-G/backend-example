@@ -60,7 +60,7 @@ func (cc *TableController) updateTable(ctx *gin.Context) {
 		return
 	}
 
-	err = cc.usecase.UpdateTable(&tableFound, true)
+	err = cc.usecase.UpdateTable(&tableFound)
 	if err != nil {
 		cc.FailedResponse(ctx, err)
 		return

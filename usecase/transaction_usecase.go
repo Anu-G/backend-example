@@ -168,7 +168,7 @@ func (tu trxUseCase) PrintAndFinishTransaction(trx *entity.Bill) (dto.BillPrintO
 	if trx.TransactionTypeID != "TA" {
 		printOut.TransactionType = transactionType.Description
 		printOut.Table = strconv.FormatInt(trx.TableID.Int64, 10)
-		tu.tableUC.UpdateTable(&entity.Table{Model: gorm.Model{ID: uint(trx.TableID.Int64)}}, true)
+		tu.tableUC.UpdateTableAvailability(&entity.Table{Model: gorm.Model{ID: uint(trx.TableID.Int64)}}, true)
 	} else {
 		printOut.TransactionType = transactionType.Description
 	}
