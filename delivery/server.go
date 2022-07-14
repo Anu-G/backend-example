@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"wmb-rest-api/auth"
 	"wmb-rest-api/config"
 	"wmb-rest-api/delivery/controller"
 	"wmb-rest-api/manager"
@@ -17,7 +18,9 @@ type appServer struct {
 	host        string
 	startServer bool
 
-	UseCaseManager manager.UseCaseManagerInterface
+	UseCaseManager    manager.UseCaseManagerInterface
+	MiddlewareManager manager.MiddlewareManagerInterface
+	Auth              auth.TokenInterface
 }
 
 func Server() *appServer {
@@ -25,13 +28,17 @@ func Server() *appServer {
 
 	appCfg := config.NewConfig()
 	dbCon := manager.NewInfraSetup(appCfg)
+	auth := auth.NewTokenService(appCfg.TokenConfig)
 	repoManager := manager.NewRepo(dbCon)
 	usecaseManager := manager.NewUseCase(repoManager)
+	middlewareManager := manager.NewMiddleware(auth)
 
 	cfgServer := &appServer{
-		engine:         r,
-		host:           appCfg.APIConfig.APIUrl,
-		UseCaseManager: usecaseManager,
+		engine:            r,
+		host:              appCfg.APIConfig.APIUrl,
+		UseCaseManager:    usecaseManager,
+		MiddlewareManager: middlewareManager,
+		Auth:              auth,
 	}
 
 	args := os.Args[1:]
@@ -63,11 +70,12 @@ func Server() *appServer {
 }
 
 func (a *appServer) initControllers() {
-	controller.NewMenuController(a.engine, a.UseCaseManager.MenuUseCase())
-	controller.NewCustomerController(a.engine, a.UseCaseManager.CustomerUseCase())
-	controller.NewTransactionController(a.engine, a.UseCaseManager.TrxUseCase())
-	controller.NewTableController(a.engine, a.UseCaseManager.TableUseCase())
-	controller.NewDiscountController(a.engine, a.UseCaseManager.DiscountUseCase())
+	controller.NewMenuController(a.engine, a.UseCaseManager.MenuUseCase(), a.MiddlewareManager.AuthMiddleware())
+	controller.NewCustomerController(a.engine, a.UseCaseManager.CustomerUseCase(), a.MiddlewareManager.AuthMiddleware())
+	controller.NewTransactionController(a.engine, a.UseCaseManager.TrxUseCase(), a.MiddlewareManager.AuthMiddleware())
+	controller.NewTableController(a.engine, a.UseCaseManager.TableUseCase(), a.MiddlewareManager.AuthMiddleware())
+	controller.NewDiscountController(a.engine, a.UseCaseManager.DiscountUseCase(), a.MiddlewareManager.AuthMiddleware())
+	controller.NewAuthController(a.engine, a.UseCaseManager.CustomerUseCase(), a.UseCaseManager.AuthUseCase(), a.Auth)
 }
 
 func (a *appServer) Run() {

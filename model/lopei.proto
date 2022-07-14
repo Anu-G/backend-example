@@ -5,11 +5,11 @@ package api;
 option go_package = "../service";
 
 message CheckBalanceMessage {
-  string phoneNumber = 1;
+  string lopeiId = 1;
 }
 
 message PaymentMessage {
-  string phoneNumber = 1;
+  string lopeiId = 1;
   double amount = 2;
 }
 

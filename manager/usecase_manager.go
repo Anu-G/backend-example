@@ -8,6 +8,7 @@ type UseCaseManagerInterface interface {
 	TableUseCase() usecase.TableUseCaseInterface
 	MenuUseCase() usecase.MenuUseCaseInterface
 	TrxUseCase() usecase.TrxUseCaseInterface
+	AuthUseCase() usecase.AuthUseCaseInterface
 }
 
 type useCaseManager struct {
@@ -39,4 +40,8 @@ func (um *useCaseManager) MenuUseCase() usecase.MenuUseCaseInterface {
 func (um *useCaseManager) TrxUseCase() usecase.TrxUseCaseInterface {
 	return usecase.NewTrxUseCase(um.repo.BillRepo(), um.repo.TrxTypeRepo(), um.repo.LopeiRepo(),
 		um.CustomerUseCase(), um.TableUseCase(), um.MenuUseCase(), um.DiscountUseCase())
+}
+
+func (um *useCaseManager) AuthUseCase() usecase.AuthUseCaseInterface {
+	return usecase.NewAuthUseCase(um.repo.AuthRepo())
 }

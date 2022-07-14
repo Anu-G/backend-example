@@ -55,7 +55,8 @@ func (tu *trxUseCase) CreateTransaction(crtrx *dto.CreateTransaction) (int, erro
 	)
 
 	// Customer Validation
-	if customer, err = tu.customerUC.ReadOrCreateCustomer(crtrx.Customer); err != nil {
+	customer = crtrx.Customer
+	if err = tu.customerUC.FindByPhone(&customer); err != nil {
 		return billID, err
 	}
 

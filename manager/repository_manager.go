@@ -10,6 +10,7 @@ type RepositoryManagerInterface interface {
 	TrxTypeRepo() repository.TrxTypeInterface
 	BillRepo() repository.BillRepositoryInterface
 	LopeiRepo() repository.LopeiRepositoryInterface
+	AuthRepo() repository.AuthRepositoryInterface
 }
 
 type repositoryManager struct {
@@ -48,4 +49,8 @@ func (rm *repositoryManager) BillRepo() repository.BillRepositoryInterface {
 
 func (rm *repositoryManager) LopeiRepo() repository.LopeiRepositoryInterface {
 	return repository.NewLopeiRepo(rm.dbCon.LopeiCon())
+}
+
+func (rm *repositoryManager) AuthRepo() repository.AuthRepositoryInterface {
+	return repository.NewAuthRepo(rm.dbCon.DBCon())
 }

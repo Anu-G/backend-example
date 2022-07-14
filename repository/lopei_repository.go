@@ -27,7 +27,7 @@ func NewLopeiRepo(client service.LopeiPaymentClient) LopeiRepositoryInterface {
 
 func (bpr *lopeiRepository) CheckBalance(phoneNumber string) (float64, error) {
 	res, err := bpr.client.CheckBalance(context.Background(), &service.CheckBalanceMessage{
-		PhoneNumber: phoneNumber,
+		LopeiId: phoneNumber,
 	})
 	if err != nil {
 		return 0, err
@@ -50,8 +50,8 @@ func (bpr *lopeiRepository) CheckBalance(phoneNumber string) (float64, error) {
 
 func (bpr *lopeiRepository) DoPayment(phoneNumber string, amount float64) error {
 	if res, err := bpr.client.DoPayment(context.Background(), &service.PaymentMessage{
-		PhoneNumber: phoneNumber,
-		Amount:      amount,
+		LopeiId: phoneNumber,
+		Amount:  amount,
 	}); err != nil {
 		return err
 	} else if res.Error != nil {

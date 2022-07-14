@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 
 	"wmb-rest-api/model/dto"
 	"wmb-rest-api/model/entity"
@@ -12,7 +11,7 @@ import (
 )
 
 type CustomerUseCaseInterface interface {
-	ReadOrCreateCustomer(c entity.Customer) (entity.Customer, error)
+	ReadOrCreateCustomer(c *entity.Customer) error
 	FindById(c *entity.Customer) error
 	FindByPhone(c *entity.Customer) error
 	FindByIdPreload(c *entity.Customer) error
@@ -32,23 +31,23 @@ func NewCustomerUseCase(repo repository.CustomerRepositoryInterface, du Discount
 	}
 }
 
-func (cu *customerUseCase) ReadOrCreateCustomer(c entity.Customer) (entity.Customer, error) {
-	foundCust, err := cu.repo.FindFirtstPreload("Discounts", map[string]interface{}{"mobile_phone_no": c.MobilePhoneNo})
+func (cu *customerUseCase) ReadOrCreateCustomer(c *entity.Customer) error {
+	foundCust, err := cu.repo.FindFirtst(map[string]interface{}{"mobile_phone_no": c.MobilePhoneNo})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			if err = cu.repo.Create(&c); err != nil {
-				return c, err
+			if err = cu.repo.Create(c); err != nil {
+				return err
 			}
-			return c, err
+			return nil
 		} else {
-			return foundCust, err
+			return err
 		}
-	} else if c.CustomerName != foundCust.CustomerName {
-		err = fmt.Errorf("found customer with same name %s,"+
-			"if that is you, please fix the name or register with new phone number", foundCust.CustomerName)
-		return foundCust, err
 	}
-	return foundCust, nil
+
+	if foundCust.ID != 0 {
+		return errors.New("phone number already registered, please login with your username and password")
+	}
+	return nil
 }
 
 func (cu *customerUseCase) FindById(c *entity.Customer) error {

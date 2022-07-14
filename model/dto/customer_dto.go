@@ -7,3 +7,11 @@ type CustomerRequest struct {
 	IsMember      bool   `json:"is_member"`
 	DiscountID    uint   `json:"discount_id"`
 }
+
+type RegisterCustomerRequest struct {
+	UserName      string `json:"user_name"`
+	UserPassword  string `json:"user_password"`
+	CustomerName  string `json:"customer_name"`
+	MobilePhoneNo string `json:"mobile_phone_no"`
+	Email         string `json:"email"`
+}

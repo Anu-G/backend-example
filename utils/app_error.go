@@ -31,3 +31,12 @@ func DataNotFoundError() error {
 		ErrorType:    http.StatusNotFound,
 	}
 }
+
+func WrongInputNumber(field string) error {
+	msg := fmt.Sprintf("%s must be a number", field)
+	return &AppError{
+		ErrorCode:    "X03",
+		ErrorMessage: msg,
+		ErrorType:    http.StatusBadRequest,
+	}
+}

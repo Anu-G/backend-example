@@ -23,7 +23,8 @@ func RunMigrate(dbc manager.InfraManagerInterface) error {
 
 	err = dbc.DBCon().AutoMigrate(
 		&entity.Menu{}, &entity.Table{}, &entity.TransactionType{}, &entity.Customer{},
-		&entity.Discount{}, &entity.MenuPrice{}, &entity.Bill{}, &entity.BillPayment{})
+		&entity.Discount{}, &entity.MenuPrice{}, &entity.Bill{}, &entity.BillPayment{},
+		&entity.UserCredential{})
 	if err != nil {
 		panic(err)
 	}

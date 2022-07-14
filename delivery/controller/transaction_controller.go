@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"wmb-rest-api/delivery/api"
+	"wmb-rest-api/delivery/middleware"
 	"wmb-rest-api/model/dto"
 	"wmb-rest-api/model/entity"
 	"wmb-rest-api/usecase"
@@ -13,20 +14,21 @@ import (
 )
 
 type TransactionController struct {
-	router  *gin.Engine
-	usecase usecase.TrxUseCaseInterface
+	router     *gin.Engine
+	usecase    usecase.TrxUseCaseInterface
+	middleware middleware.AuthTokenMiddlewareInterface
 	api.BaseApi
 }
 
-func NewTransactionController(router *gin.Engine, uc usecase.TrxUseCaseInterface) *TransactionController {
+func NewTransactionController(router *gin.Engine, uc usecase.TrxUseCaseInterface, mw middleware.AuthTokenMiddlewareInterface) *TransactionController {
 	controller := TransactionController{
 		router:  router,
 		usecase: uc,
 	}
 
 	routeTransaction := controller.router.Group("/transaction")
+	routeTransaction.Use(mw.RequireToken())
 	routeTransaction.POST("/create", controller.createTransaction)
-	// routeTransaction.GET("/print", controller.printTransaction)
 	routeTransaction.GET("/revenue", controller.dailyRevenue)
 	routeTransaction.POST("/payment/balance", controller.checkBalance)
 	routeTransaction.POST("/payment/pay", controller.doPayment)
@@ -62,26 +64,6 @@ func (tc *TransactionController) createTransaction(ctx *gin.Context) {
 	resp := fmt.Sprintf("transaction created! id:%v", billID)
 	tc.SuccessResponse(ctx, resp)
 }
-
-// func (tc *TransactionController) printTransaction(ctx *gin.Context) {
-// 	var trx entity.Bill
-
-// 	err := tc.ParseBodyRequest(ctx, &trx)
-// 	if trx.ID == 0 {
-// 		tc.FailedResponse(ctx, utils.RequiredError("id"))
-// 		return
-// 	} else if err != nil {
-// 		tc.FailedResponse(ctx, err)
-// 		return
-// 	}
-
-// 	if printOut, err := tc.usecase.PrintAndFinishTransaction(&trx); err != nil {
-// 		tc.FailedResponse(ctx, err)
-// 		return
-// 	} else {
-// 		tc.SuccessResponse(ctx, printOut)
-// 	}
-// }
 
 func (tc *TransactionController) dailyRevenue(ctx *gin.Context) {
 	var rev dto.Revenue

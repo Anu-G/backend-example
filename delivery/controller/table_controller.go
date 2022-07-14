@@ -2,6 +2,7 @@ package controller
 
 import (
 	"wmb-rest-api/delivery/api"
+	"wmb-rest-api/delivery/middleware"
 	"wmb-rest-api/model/entity"
 	"wmb-rest-api/usecase"
 	"wmb-rest-api/utils"
@@ -10,39 +11,46 @@ import (
 )
 
 type TableController struct {
-	router  *gin.Engine
-	usecase usecase.TableUseCaseInterface
+	router     *gin.Engine
+	usecase    usecase.TableUseCaseInterface
+	middleware middleware.AuthTokenMiddlewareInterface
 	api.BaseApi
 }
 
-func NewTableController(router *gin.Engine, uc usecase.TableUseCaseInterface) *TableController {
+func NewTableController(router *gin.Engine, uc usecase.TableUseCaseInterface, mw middleware.AuthTokenMiddlewareInterface) *TableController {
 	controller := TableController{
-		router:  router,
-		usecase: uc,
+		router:     router,
+		usecase:    uc,
+		middleware: mw,
 	}
 
 	routeTable := controller.router.Group("/table")
-	routeTable.GET("/", controller.getTableById)
-	routeTable.PUT("/", controller.updateTable)
-	routeTable.DELETE("/", controller.deleteTable)
-	routeTable.POST("/", controller.createTable)
+	routeTable.Use(mw.RequireToken())
+	routeTable.GET("/:id", controller.getTableById)
+	routeTable.PUT("/update", controller.updateTable)
+	routeTable.DELETE("/:id", controller.deleteTable)
+	routeTable.POST("/register", controller.createTable)
 
 	return &controller
 }
 
 func (cc *TableController) getTableById(ctx *gin.Context) {
 	var tableFound entity.Table
-	err := cc.ParseBodyRequest(ctx, &tableFound)
-	if tableFound.ID == 0 {
+	tableID, err := utils.StringToInt64(ctx.Param("id"))
+	if err != nil {
+		cc.FailedResponse(ctx, utils.WrongInputNumber("id"))
+		return
+	} else if tableID == 0 {
 		cc.FailedResponse(ctx, utils.RequiredError("id"))
 		return
-	} else if err != nil {
-		cc.FailedResponse(ctx, err)
-		return
 	}
+	tableFound.ID = uint(tableID)
 
 	err = cc.usecase.GetTable(&tableFound)
-	if err != nil {
+	if err != nil && err.Error() == "record not found" {
+		cc.FailedResponse(ctx, utils.DataNotFoundError())
+		return
+	} else if err != nil {
 		cc.FailedResponse(ctx, err)
 		return
 	}
@@ -70,17 +78,21 @@ func (cc *TableController) updateTable(ctx *gin.Context) {
 
 func (cc *TableController) deleteTable(ctx *gin.Context) {
 	var tableFound entity.Table
-	err := cc.ParseBodyRequest(ctx, &tableFound)
-	if tableFound.ID == 0 {
+	tableID, err := utils.StringToInt64(ctx.Param("id"))
+	if err != nil {
+		cc.FailedResponse(ctx, utils.WrongInputNumber("id"))
+		return
+	} else if tableID == 0 {
 		cc.FailedResponse(ctx, utils.RequiredError("id"))
 		return
-	} else if err != nil {
-		cc.FailedResponse(ctx, err)
-		return
 	}
+	tableFound.ID = uint(tableID)
 
 	err = cc.usecase.DeleteTable(&tableFound)
-	if err != nil {
+	if err != nil && err.Error() == "record not found" {
+		cc.FailedResponse(ctx, utils.DataNotFoundError())
+		return
+	} else if err != nil {
 		cc.FailedResponse(ctx, err)
 		return
 	}

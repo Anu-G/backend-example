@@ -13,7 +13,7 @@ type CustomerRepositoryInterface interface {
 	FindById(c *entity.Customer) error
 	FindByPhone(c *entity.Customer) error
 	FindByIdPreload(c *entity.Customer, preload string) error
-	FindFirtstPreload(preload string, by map[string]interface{}) (entity.Customer, error)
+	FindFirtst(by map[string]interface{}) (entity.Customer, error)
 	FindAll(by map[string]interface{}) ([]entity.Customer, error)
 	Update(c *entity.Customer) error
 	Delete(c *entity.Customer) error
@@ -46,9 +46,9 @@ func (cr *customerRepository) FindByIdPreload(c *entity.Customer, preload string
 	return cr.db.Preload(preload).First(&c).Error
 }
 
-func (cr *customerRepository) FindFirtstPreload(preload string, by map[string]interface{}) (entity.Customer, error) {
+func (cr *customerRepository) FindFirtst(by map[string]interface{}) (entity.Customer, error) {
 	var customer entity.Customer
-	res := cr.db.Preload(preload).Where(by).First(&customer)
+	res := cr.db.Where(by).First(&customer)
 	if err := res.Error; err != nil {
 		return customer, err
 	}

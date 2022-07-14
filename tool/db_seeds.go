@@ -15,10 +15,25 @@ func RunSeeds(dbc manager.InfraManagerInterface) {
 
 	repoMng := manager.NewRepo(dbc)
 
+	user1 := entity.UserCredential{
+		UserName:     "kadir33",
+		UserPassword: "passwordkadir",
+		Email:        "kadir@mail.com",
+	}
+	user1.Encode()
+
+	user2 := entity.UserCredential{
+		UserName:     "devi83",
+		UserPassword: "passworddevi",
+		Email:        "devi@mail.com",
+	}
+	user2.Encode()
+
 	customers := []*entity.Customer{
 		{
-			CustomerName:  "Kadir",
-			MobilePhoneNo: "0877123333",
+			CustomerName:   "Kadir",
+			MobilePhoneNo:  "0877123333",
+			UserCredential: user1,
 		},
 		{
 			CustomerName:  "Devi",
@@ -30,6 +45,7 @@ func RunSeeds(dbc manager.InfraManagerInterface) {
 					Pct:         10,
 				},
 			},
+			UserCredential: user2,
 		},
 	}
 	for _, data := range customers {
