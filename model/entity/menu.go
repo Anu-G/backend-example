@@ -1,8 +1,6 @@
 package entity
 
 import (
-	"encoding/json"
-
 	"gorm.io/gorm"
 )
 
@@ -17,10 +15,10 @@ func (m Menu) TableName() string {
 	return "m_menu"
 }
 
-func (m Menu) String() string {
-	json, err := json.MarshalIndent(m, "", "  ")
-	if err != nil {
-		return err.Error()
-	}
-	return string(json)
-}
+// func (m Menu) String() string {
+// 	json, err := json.MarshalIndent(m, "", "  ")
+// 	if err != nil {
+// 		return err.Error()
+// 	}
+// 	return string(json)
+// }

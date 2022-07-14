@@ -30,7 +30,7 @@ func NewSuccessMessage(data interface{}) (httpStatusCode int, apiResponse Respon
 }
 
 func NewErrorMessage(err error) (httpStatusCode int, apiResponse Response) {
-	var userError utils.AppError
+	var userError *utils.AppError
 	var status Status
 	if errors.As(err, &userError) {
 		status = Status{

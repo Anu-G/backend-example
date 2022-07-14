@@ -13,25 +13,28 @@ import (
 
 type TrxUseCaseInterface interface {
 	CreateTransaction(crtrx *dto.CreateTransaction) (int, error)
-	PrintAndFinishTransaction(trx *entity.Bill) (dto.BillPrintOut, error)
+	PayAndFinishTransaction(pay *dto.PaymentMethod) (dto.BillPrintOut, error)
 	GetRevenue(rev *dto.Revenue) error
+	CheckBalance(c *entity.Customer) (dto.LopeiBalance, error)
 }
 
 type trxUseCase struct {
 	repo        repository.BillRepositoryInterface
 	trxTypeRepo repository.TrxTypeInterface
+	lopeiRepo   repository.LopeiRepositoryInterface
 	customerUC  CustomerUseCaseInterface
 	tableUC     TableUseCaseInterface
 	menuUC      MenuUseCaseInterface
 	discountUC  DiscountUseCaseInterface
 }
 
-func NewTrxUseCase(repo repository.BillRepositoryInterface, ttp repository.TrxTypeInterface,
+func NewTrxUseCase(repo repository.BillRepositoryInterface, ttp repository.TrxTypeInterface, bp repository.LopeiRepositoryInterface,
 	cu CustomerUseCaseInterface, tu TableUseCaseInterface, mu MenuUseCaseInterface, du DiscountUseCaseInterface,
 ) TrxUseCaseInterface {
 	return &trxUseCase{
 		repo:        repo,
 		trxTypeRepo: ttp,
+		lopeiRepo:   bp,
 		customerUC:  cu,
 		tableUC:     tu,
 		menuUC:      mu,
@@ -39,7 +42,7 @@ func NewTrxUseCase(repo repository.BillRepositoryInterface, ttp repository.TrxTy
 	}
 }
 
-func (tu trxUseCase) CreateTransaction(crtrx *dto.CreateTransaction) (int, error) {
+func (tu *trxUseCase) CreateTransaction(crtrx *dto.CreateTransaction) (int, error) {
 	var (
 		err         error
 		billID      int
@@ -103,10 +106,12 @@ func (tu trxUseCase) CreateTransaction(crtrx *dto.CreateTransaction) (int, error
 	return billID, nil
 }
 
-func (tu trxUseCase) PrintAndFinishTransaction(trx *entity.Bill) (dto.BillPrintOut, error) {
+func (tu *trxUseCase) PayAndFinishTransaction(pay *dto.PaymentMethod) (dto.BillPrintOut, error) {
 	var (
 		err             error
 		customer        entity.Customer
+		bill            entity.Bill
+		billPayment     entity.BillPayment
 		transactionType entity.TransactionType
 		discount        entity.Discount
 		menu            entity.Menu
@@ -116,11 +121,12 @@ func (tu trxUseCase) PrintAndFinishTransaction(trx *entity.Bill) (dto.BillPrintO
 	)
 
 	// Validate Bill
-	if err = tu.repo.FindById(trx); err != nil {
+	bill.ID = pay.BillId
+	if err = tu.repo.FindById(&bill); err != nil {
 		return printOut, err
 	}
-	customer.ID = trx.CustomerID
-	transactionType.ID = trx.TransactionTypeID
+	customer.ID = bill.CustomerID
+	transactionType.ID = bill.TransactionTypeID
 
 	// Get Customer Data
 	if err = tu.customerUC.FindById(&customer); err != nil {
@@ -133,22 +139,22 @@ func (tu trxUseCase) PrintAndFinishTransaction(trx *entity.Bill) (dto.BillPrintO
 	}
 
 	// Get Discount Percent
-	if trx.DiscountID.Int64 != 0 {
-		discount.ID = trx.Discount.ID
+	if bill.DiscountID.Int64 != 0 {
+		discount.ID = bill.Discount.ID
 		if err = tu.discountUC.GetDiscountByID(&discount); err != nil {
 			return printOut, err
 		}
 	}
 
 	// Get All Orders
-	if orders, err = tu.repo.FindAllBillDetail(map[string]interface{}{"bill_id": trx.ID}); err != nil {
+	if orders, err = tu.repo.FindAllBillDetail(map[string]interface{}{"bill_id": bill.ID}); err != nil {
 		return printOut, err
 	}
 
 	for _, data := range orders {
 		menuPrice.ID = data.MenuPriceID
 		if menu, err = tu.menuUC.FindMenuPriceAndMenu(&menuPrice); err != nil {
-			return printOut, err
+			return dto.BillPrintOut{}, err
 		}
 
 		summary := dto.HistoryMenuOrder{
@@ -162,20 +168,38 @@ func (tu trxUseCase) PrintAndFinishTransaction(trx *entity.Bill) (dto.BillPrintO
 		printOut.GrandTotal += summary.Subtotal
 	}
 
-	printOut.BillID = trx.ID
-	printOut.TransactionDate = trx.TransactionDate.Format("2 Jan 2006 15:04:05")
-	printOut.CustomerName = customer.CustomerName
-	if trx.TransactionTypeID != "TA" {
-		printOut.TransactionType = transactionType.Description
-		printOut.Table = strconv.FormatInt(trx.TableID.Int64, 10)
-		tu.tableUC.UpdateTableAvailability(&entity.Table{Model: gorm.Model{ID: uint(trx.TableID.Int64)}}, true)
-	} else {
-		printOut.TransactionType = transactionType.Description
-	}
 	printOut.Discount = discount.Pct
 	if discount.Pct != 0 {
 		discNum := (float64(100-discount.Pct) / 100)
 		printOut.GrandTotal = printOut.GrandTotal * discNum
+	}
+
+	// pay
+	if pay.PaymentMethod != "lopei" && pay.PaymentMethod != "cash" {
+		return dto.BillPrintOut{}, errors.New("payment method invalid")
+	}
+
+	if pay.PaymentMethod == "lopei" {
+		if err = tu.lopeiRepo.DoPayment(customer.MobilePhoneNo, printOut.GrandTotal); err != nil {
+			return dto.BillPrintOut{}, err
+		}
+	}
+	billPayment.BillID = bill.ID
+	billPayment.PaymentMethod = pay.PaymentMethod
+	billPayment.TotalPayment = printOut.GrandTotal
+	if err = tu.repo.CreateBillPayment(&billPayment); err != nil {
+		return dto.BillPrintOut{}, err
+	}
+
+	printOut.BillID = bill.ID
+	printOut.TransactionDate = bill.TransactionDate.Format("2 Jan 2006 15:04:05")
+	printOut.CustomerName = customer.CustomerName
+	if bill.TransactionTypeID != "TA" {
+		printOut.TransactionType = transactionType.Description
+		printOut.Table = strconv.FormatInt(bill.TableID.Int64, 10)
+		tu.tableUC.UpdateTableAvailability(&entity.Table{Model: gorm.Model{ID: uint(bill.TableID.Int64)}}, true)
+	} else {
+		printOut.TransactionType = transactionType.Description
 	}
 
 	return printOut, err
@@ -220,4 +244,25 @@ func (tu *trxUseCase) GetRevenue(rev *dto.Revenue) error {
 		rev.TotalRevenue += subtotal
 	}
 	return err
+}
+
+func (tu *trxUseCase) CheckBalance(c *entity.Customer) (dto.LopeiBalance, error) {
+	var (
+		lopeiData dto.LopeiBalance
+		balance   float64
+		err       error
+	)
+
+	if err = tu.customerUC.FindByPhone(c); err != nil {
+		return lopeiData, err
+	}
+	balance, err = tu.lopeiRepo.CheckBalance(c.MobilePhoneNo)
+	if err != nil {
+		return lopeiData, err
+	}
+	lopeiData.CustomerName = c.CustomerName
+	lopeiData.MobilePhoneNo = c.MobilePhoneNo
+	lopeiData.Balance = balance
+
+	return lopeiData, nil
 }

@@ -24,7 +24,7 @@ func Server() *appServer {
 	r := gin.Default()
 
 	appCfg := config.NewConfig()
-	dbCon := manager.NewDBConnection(appCfg.DBConfig)
+	dbCon := manager.NewInfraSetup(appCfg)
 	repoManager := manager.NewRepo(dbCon)
 	usecaseManager := manager.NewUseCase(repoManager)
 
@@ -71,8 +71,8 @@ func (a *appServer) initControllers() {
 }
 
 func (a *appServer) Run() {
-	a.initControllers()
 	if a.startServer {
+		a.initControllers()
 		if err := a.engine.Run(a.host); err != nil {
 			panic(err)
 		}

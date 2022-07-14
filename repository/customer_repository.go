@@ -11,6 +11,7 @@ import (
 type CustomerRepositoryInterface interface {
 	Create(c *entity.Customer) error
 	FindById(c *entity.Customer) error
+	FindByPhone(c *entity.Customer) error
 	FindByIdPreload(c *entity.Customer, preload string) error
 	FindFirtstPreload(preload string, by map[string]interface{}) (entity.Customer, error)
 	FindAll(by map[string]interface{}) ([]entity.Customer, error)
@@ -35,6 +36,10 @@ func (cr *customerRepository) Create(c *entity.Customer) error {
 
 func (cr *customerRepository) FindById(c *entity.Customer) error {
 	return cr.db.First(&c).Error
+}
+
+func (cr *customerRepository) FindByPhone(c *entity.Customer) error {
+	return cr.db.First(&c, "mobile_phone_no = ?", c.MobilePhoneNo).Error
 }
 
 func (cr *customerRepository) FindByIdPreload(c *entity.Customer, preload string) error {

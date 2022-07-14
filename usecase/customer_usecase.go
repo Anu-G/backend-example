@@ -14,6 +14,7 @@ import (
 type CustomerUseCaseInterface interface {
 	ReadOrCreateCustomer(c entity.Customer) (entity.Customer, error)
 	FindById(c *entity.Customer) error
+	FindByPhone(c *entity.Customer) error
 	FindByIdPreload(c *entity.Customer) error
 	UpdateCustomer(cr *dto.CustomerRequest) (updatedCustomer entity.Customer, err error)
 	DeleteCustomer(c *entity.Customer) error
@@ -52,6 +53,10 @@ func (cu *customerUseCase) ReadOrCreateCustomer(c entity.Customer) (entity.Custo
 
 func (cu *customerUseCase) FindById(c *entity.Customer) error {
 	return cu.repo.FindById(c)
+}
+
+func (cu *customerUseCase) FindByPhone(c *entity.Customer) error {
+	return cu.repo.FindByPhone(c)
 }
 
 func (cu *customerUseCase) FindByIdPreload(c *entity.Customer) error {

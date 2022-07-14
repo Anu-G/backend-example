@@ -5,7 +5,7 @@ import (
 	"wmb-rest-api/model/entity"
 )
 
-func RunMigrate(dbc manager.DBConnectionInterface) error {
+func RunMigrate(dbc manager.InfraManagerInterface) error {
 	var err error
 
 	sqlDB, _ := dbc.DBCon().DB()
@@ -23,7 +23,7 @@ func RunMigrate(dbc manager.DBConnectionInterface) error {
 
 	err = dbc.DBCon().AutoMigrate(
 		&entity.Menu{}, &entity.Table{}, &entity.TransactionType{}, &entity.Customer{},
-		&entity.Discount{}, &entity.MenuPrice{}, &entity.Bill{})
+		&entity.Discount{}, &entity.MenuPrice{}, &entity.Bill{}, &entity.BillPayment{})
 	if err != nil {
 		panic(err)
 	}

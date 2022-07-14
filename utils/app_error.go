@@ -11,14 +11,14 @@ type AppError struct {
 	ErrorType    int
 }
 
-func (e AppError) Error() string {
+func (e *AppError) Error() string {
 	return fmt.Sprintf("type: %d, code:%s, err:%s", e.ErrorType, e.ErrorCode, e.ErrorMessage)
 }
 
 func RequiredError(field string) error {
 	msg := fmt.Sprintf("%s can't be empty", field)
 	return &AppError{
-		ErrorCode:    "X01",
+		ErrorCode:    "X02",
 		ErrorMessage: msg,
 		ErrorType:    http.StatusBadRequest,
 	}
@@ -26,7 +26,8 @@ func RequiredError(field string) error {
 
 func DataNotFoundError() error {
 	return &AppError{
-		ErrorCode:    "X02",
+		ErrorCode:    "X04",
 		ErrorMessage: "No Data Found",
+		ErrorType:    http.StatusNotFound,
 	}
 }

@@ -9,13 +9,14 @@ type RepositoryManagerInterface interface {
 	DiscountRepo() repository.DiscountRepositoryInterface
 	TrxTypeRepo() repository.TrxTypeInterface
 	BillRepo() repository.BillRepositoryInterface
+	LopeiRepo() repository.LopeiRepositoryInterface
 }
 
 type repositoryManager struct {
-	dbCon DBConnectionInterface
+	dbCon InfraManagerInterface
 }
 
-func NewRepo(dbCon DBConnectionInterface) RepositoryManagerInterface {
+func NewRepo(dbCon InfraManagerInterface) RepositoryManagerInterface {
 	return &repositoryManager{
 		dbCon: dbCon,
 	}
@@ -43,4 +44,8 @@ func (rm *repositoryManager) TrxTypeRepo() repository.TrxTypeInterface {
 
 func (rm *repositoryManager) BillRepo() repository.BillRepositoryInterface {
 	return repository.NewBillRepo(rm.dbCon.DBCon())
+}
+
+func (rm *repositoryManager) LopeiRepo() repository.LopeiRepositoryInterface {
+	return repository.NewLopeiRepo(rm.dbCon.LopeiCon())
 }

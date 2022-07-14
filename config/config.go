@@ -9,6 +9,7 @@ import (
 type Config struct {
 	DBConfig
 	APIConfig
+	LopeiGrpcConfig
 }
 
 type DBConfig struct {
@@ -24,6 +25,10 @@ type DBConfig struct {
 
 type APIConfig struct {
 	APIUrl string `mapstructure:"API_URL"`
+}
+
+type LopeiGrpcConfig struct {
+	LopeiUrl string `mapstructure:"LOPEI_URL"`
 }
 
 func (c *Config) loadConfig(path string) (config Config, err error) {
@@ -43,6 +48,10 @@ func (c *Config) loadConfig(path string) (config Config, err error) {
 	}
 
 	if err = viper.Unmarshal(&config.DBConfig); err != nil {
+		return
+	}
+
+	if err = viper.Unmarshal(&config.LopeiGrpcConfig); err != nil {
 		return
 	}
 	return

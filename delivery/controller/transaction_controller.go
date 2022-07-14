@@ -26,8 +26,10 @@ func NewTransactionController(router *gin.Engine, uc usecase.TrxUseCaseInterface
 
 	routeTransaction := controller.router.Group("/transaction")
 	routeTransaction.POST("/create", controller.createTransaction)
-	routeTransaction.GET("/print", controller.printTransaction)
+	// routeTransaction.GET("/print", controller.printTransaction)
 	routeTransaction.GET("/revenue", controller.dailyRevenue)
+	routeTransaction.POST("/payment/balance", controller.checkBalance)
+	routeTransaction.POST("/payment/pay", controller.doPayment)
 
 	return &controller
 }
@@ -61,25 +63,25 @@ func (tc *TransactionController) createTransaction(ctx *gin.Context) {
 	tc.SuccessResponse(ctx, resp)
 }
 
-func (tc *TransactionController) printTransaction(ctx *gin.Context) {
-	var trx entity.Bill
+// func (tc *TransactionController) printTransaction(ctx *gin.Context) {
+// 	var trx entity.Bill
 
-	err := tc.ParseBodyRequest(ctx, &trx)
-	if trx.ID == 0 {
-		tc.FailedResponse(ctx, utils.RequiredError("id"))
-		return
-	} else if err != nil {
-		tc.FailedResponse(ctx, err)
-		return
-	}
+// 	err := tc.ParseBodyRequest(ctx, &trx)
+// 	if trx.ID == 0 {
+// 		tc.FailedResponse(ctx, utils.RequiredError("id"))
+// 		return
+// 	} else if err != nil {
+// 		tc.FailedResponse(ctx, err)
+// 		return
+// 	}
 
-	if printOut, err := tc.usecase.PrintAndFinishTransaction(&trx); err != nil {
-		tc.FailedResponse(ctx, err)
-		return
-	} else {
-		tc.SuccessResponse(ctx, printOut)
-	}
-}
+// 	if printOut, err := tc.usecase.PrintAndFinishTransaction(&trx); err != nil {
+// 		tc.FailedResponse(ctx, err)
+// 		return
+// 	} else {
+// 		tc.SuccessResponse(ctx, printOut)
+// 	}
+// }
 
 func (tc *TransactionController) dailyRevenue(ctx *gin.Context) {
 	var rev dto.Revenue
@@ -98,4 +100,47 @@ func (tc *TransactionController) dailyRevenue(ctx *gin.Context) {
 		return
 	}
 	tc.SuccessResponse(ctx, rev)
+}
+
+func (tc *TransactionController) checkBalance(ctx *gin.Context) {
+	var cus entity.Customer
+
+	err := tc.ParseBodyRequest(ctx, &cus)
+	if cus.MobilePhoneNo == "" {
+		tc.FailedResponse(ctx, utils.RequiredError("phone number"))
+		return
+	} else if err != nil {
+		tc.FailedResponse(ctx, err)
+		return
+	}
+
+	balance, err := tc.usecase.CheckBalance(&cus)
+	if err != nil {
+		tc.FailedResponse(ctx, err)
+		return
+	}
+	tc.SuccessResponse(ctx, balance)
+}
+
+func (tc *TransactionController) doPayment(ctx *gin.Context) {
+	var pay dto.PaymentMethod
+
+	err := tc.ParseBodyRequest(ctx, &pay)
+	if pay.BillId == 0 {
+		tc.FailedResponse(ctx, utils.RequiredError("bill id"))
+		return
+	} else if pay.PaymentMethod == "" {
+		tc.FailedResponse(ctx, utils.RequiredError("payment method"))
+		return
+	} else if err != nil {
+		tc.FailedResponse(ctx, err)
+		return
+	}
+
+	if printOut, err := tc.usecase.PayAndFinishTransaction(&pay); err != nil {
+		tc.FailedResponse(ctx, err)
+		return
+	} else {
+		tc.SuccessResponse(ctx, printOut)
+	}
 }

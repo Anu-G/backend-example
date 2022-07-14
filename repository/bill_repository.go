@@ -11,9 +11,8 @@ import (
 )
 
 type BillRepositoryInterface interface {
-	Create(b *entity.Bill) *gorm.DB
-	CreateBillDetail(bd *entity.BillDetail) *gorm.DB
 	CreateTransaction(c *entity.Customer, t *entity.Table, tt *entity.TransactionType, details *[]entity.BillDetail) (int, error)
+	CreateBillPayment(bp *entity.BillPayment) error
 	FindById(b *entity.Bill) error
 	FindAllBillDetail(by map[string]interface{}) ([]entity.BillDetail, error)
 	FindAllByDate(date string) ([]entity.Bill, error)
@@ -28,14 +27,6 @@ func NewBillRepo(db *gorm.DB) BillRepositoryInterface {
 	return &billRepository{
 		db: db,
 	}
-}
-
-func (br *billRepository) Create(b *entity.Bill) *gorm.DB {
-	return br.db.Create(b)
-}
-
-func (br *billRepository) CreateBillDetail(bd *entity.BillDetail) *gorm.DB {
-	return br.db.Create(bd)
 }
 
 func (br *billRepository) CreateTransaction(c *entity.Customer, t *entity.Table, tt *entity.TransactionType, details *[]entity.BillDetail) (int, error) {
@@ -79,8 +70,7 @@ func (br *billRepository) CreateTransaction(c *entity.Customer, t *entity.Table,
 			}
 
 			if t.ID != 0 {
-				t.IsAvailable = false
-				if err = tx.Model(&t).Updates(&t).Error; err != nil {
+				if err = tx.Model(&t).Update("is_available", false).Error; err != nil {
 					return err
 				}
 			}
@@ -94,6 +84,10 @@ func (br *billRepository) CreateTransaction(c *entity.Customer, t *entity.Table,
 
 func (br *billRepository) FindById(b *entity.Bill) error {
 	return br.db.First(&b).Error
+}
+
+func (br *billRepository) CreateBillPayment(bp *entity.BillPayment) error {
+	return br.db.Create(&bp).Error
 }
 
 func (br *billRepository) FindAllBillDetail(by map[string]interface{}) ([]entity.BillDetail, error) {

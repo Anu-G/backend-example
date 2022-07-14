@@ -7,7 +7,7 @@ import (
 	"wmb-rest-api/model/entity"
 )
 
-func RunSeeds(dbc manager.DBConnectionInterface) {
+func RunSeeds(dbc manager.InfraManagerInterface) {
 	var err error
 
 	sqlDB, _ := dbc.DBCon().DB()
@@ -81,12 +81,15 @@ func RunSeeds(dbc manager.DBConnectionInterface) {
 	tables := []*entity.Table{
 		{
 			TableDescription: "Table 1",
+			IsAvailable:      true,
 		},
 		{
 			TableDescription: "Table 2",
+			IsAvailable:      true,
 		},
 		{
 			TableDescription: "Table 3",
+			IsAvailable:      true,
 		},
 	}
 	for _, data := range tables {

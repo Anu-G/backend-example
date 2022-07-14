@@ -37,6 +37,6 @@ func (um *useCaseManager) MenuUseCase() usecase.MenuUseCaseInterface {
 }
 
 func (um *useCaseManager) TrxUseCase() usecase.TrxUseCaseInterface {
-	return usecase.NewTrxUseCase(um.repo.BillRepo(), um.repo.TrxTypeRepo(), um.CustomerUseCase(),
-		um.TableUseCase(), um.MenuUseCase(), um.DiscountUseCase())
+	return usecase.NewTrxUseCase(um.repo.BillRepo(), um.repo.TrxTypeRepo(), um.repo.LopeiRepo(),
+		um.CustomerUseCase(), um.TableUseCase(), um.MenuUseCase(), um.DiscountUseCase())
 }
