@@ -28,6 +28,13 @@ type Customer struct {
 	Balance     float64
 }
 
+3. grpc database adjustment
+repo.db = []model.Customer{
+		{LopeiId: "0877745983", Balance: 50000},
+		{LopeiId: "0877745982", Balance: 3000},
+		{LopeiId: "0877745981", Balance: 500},
+	}
+
 3. server repository addition
 return error if id/phoneNumber not found
 ```
