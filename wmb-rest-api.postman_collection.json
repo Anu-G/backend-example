@@ -1,0 +1,747 @@
+{
+	"info": {
+		"_postman_id": "458c1b8b-d24e-47d4-abaa-c172a6fea7f1",
+		"name": "wmb-rest-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19685347"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_name\":\"angga21\",\n    \"user_password\":\"passwordangga\",\n    \"customer_name\":\"Angga\",\n    \"mobile_phone_no\":\"081245340921\",\n    \"email\":\"angga@mail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/auth/register",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"UserName\":\"devi83\",\n    \"UserPassword\":\"passworddevi\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/auth/login",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Menu",
+			"item": [
+				{
+					"name": "Find Menu",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDU0OTEsImlhdCI6MTY1NzgwNDg5MSwiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiIzOThmODExOC1kYjEzLTQ5MzMtOGE3NC05NGVhNDU4YmE5Y2YifQ.tpbV4KNn2xLCZ0EtCvMZvyAb5nSXu6RSvJKGQ05TPl4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/menu/:id",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"menu",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Menu",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"menu_id\":2,\n    \"menu_name\":\"sayur sop spesial\",\n    \"menu_price\":2000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/menu/update",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"menu",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Menu",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDU0OTEsImlhdCI6MTY1NzgwNDg5MSwiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiIzOThmODExOC1kYjEzLTQ5MzMtOGE3NC05NGVhNDU4YmE5Y2YifQ.tpbV4KNn2xLCZ0EtCvMZvyAb5nSXu6RSvJKGQ05TPl4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/menu/:id",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"menu",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Menu",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"menu_name\":\"Es Teh Manis\",\n    \"menu_price\":3000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/menu/register",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"menu",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "Find Customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDUwMDIsImlhdCI6MTY1NzgwNDQwMiwiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiI4NjMyYzZkMC1kNTEyLTRhOTEtOTEwZi01MDA0NDE2MGMwZTEifQ.JP018am-gSwlOGmBJH_9c2WmYFH9rdzbd-NTH3OZGLA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/customer/:id",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"customer",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_id\":5,\n    \"customer_name\":\"Abdul Kadir\",\n    \"mobile_phone_no\":\"0877123334\",\n    \"is_member\":true,\n    \"discount_id\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/customer/update",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"customer",
+								"update"
+							]
+						},
+						"description": "*   update customer by id (mandatory)\n*   can be used for update customer name\n*   can be used for update customer member\n*   can be used for add discount to customer"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDUwMDIsImlhdCI6MTY1NzgwNDQwMiwiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiI4NjMyYzZkMC1kNTEyLTRhOTEtOTEwZi01MDA0NDE2MGMwZTEifQ.JP018am-gSwlOGmBJH_9c2WmYFH9rdzbd-NTH3OZGLA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/customer/:id",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"customer",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_name\":\"Sulaiman\",\n    \"mobile_phone_no\":\"0877128875\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/customer/register",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"customer",
+								"register"
+							]
+						},
+						"description": "*   find or create customer\n*   search by phone number (mandatory)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaction",
+			"item": [
+				{
+					"name": "Create Transaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDcxNjMsImlhdCI6MTY1NzgwNjU2MywiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiI2Mjg0Y2E4Ni05NWNlLTQ1ODEtODJlNS01Zjk1NWU0ODljNTAifQ.RBZvh2gaFS1BBWZXTISzbUnLLu677NBIGsV1S3FGs8k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"table_id\":3,\n    \"transaction_type_id\":\"DI\",\n    \"customer\":{\n        \"customername\":\"Devi\",\n        \"mobilephoneno\":\"0877745983\"\n    },\n    \"order_menu\":[\n        {\n            \"menu_id\":1,\n            \"qty\":10\n        },\n        {\n            \"menu_id\":4,\n            \"qty\":10\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transaction/create",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transaction",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Daily Revenue",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDcxNjMsImlhdCI6MTY1NzgwNjU2MywiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiI2Mjg0Y2E4Ni05NWNlLTQ1ODEtODJlNS01Zjk1NWU0ODljNTAifQ.RBZvh2gaFS1BBWZXTISzbUnLLu677NBIGsV1S3FGs8k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transaction_date\":\"2022-07-14\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transaction/revenue",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transaction",
+								"revenue"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Balance",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"MobilePhoneNo\":\"0877745983\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transaction/payment/balance",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transaction",
+								"payment",
+								"balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay and Finish Transaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDcxNjMsImlhdCI6MTY1NzgwNjU2MywiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiI2Mjg0Y2E4Ni05NWNlLTQ1ODEtODJlNS01Zjk1NWU0ODljNTAifQ.RBZvh2gaFS1BBWZXTISzbUnLLu677NBIGsV1S3FGs8k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"BillId\":3,\n    \"PaymentMethod\":\"cash\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transaction/payment/pay",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transaction",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Table",
+			"item": [
+				{
+					"name": "Find Table",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDY3MzEsImlhdCI6MTY1NzgwNjEzMSwiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiIyNDNiMTViMS1lN2EwLTRmMzAtOTdlNi0xMzA1OWEyMmYzMDAifQ.SDHI6ceuTe1kHlGt8ytIjw-Px55B12_joe9nfuitiao",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/table/:id",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"table",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Table",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":1,\n    \"tabledescription\":\"Ini Table 1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/table/update",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"table",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Table",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDY3MzEsImlhdCI6MTY1NzgwNjEzMSwiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiIyNDNiMTViMS1lN2EwLTRmMzAtOTdlNi0xMzA1OWEyMmYzMDAifQ.SDHI6ceuTe1kHlGt8ytIjw-Px55B12_joe9nfuitiao",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/table/:id",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"table",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Table",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDY3MzEsImlhdCI6MTY1NzgwNjEzMSwiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiIyNDNiMTViMS1lN2EwLTRmMzAtOTdlNi0xMzA1OWEyMmYzMDAifQ.SDHI6ceuTe1kHlGt8ytIjw-Px55B12_joe9nfuitiao",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tabledescription\":\"Ini meja baru\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/table/register",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"table",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Discount",
+			"item": [
+				{
+					"name": "Find Discount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDU0OTEsImlhdCI6MTY1NzgwNDg5MSwiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiIzOThmODExOC1kYjEzLTQ5MzMtOGE3NC05NGVhNDU4YmE5Y2YifQ.tpbV4KNn2xLCZ0EtCvMZvyAb5nSXu6RSvJKGQ05TPl4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/discount/:id",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"discount",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Discount",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":1,\n    \"pct\":12\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/discount/update",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"discount",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Discount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDU0OTEsImlhdCI6MTY1NzgwNDg5MSwiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiIzOThmODExOC1kYjEzLTQ5MzMtOGE3NC05NGVhNDU4YmE5Y2YifQ.tpbV4KNn2xLCZ0EtCvMZvyAb5nSXu6RSvJKGQ05TPl4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/discount/:id",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"discount",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Discount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MDU0OTEsImlhdCI6MTY1NzgwNDg5MSwiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiIzOThmODExOC1kYjEzLTQ5MzMtOGE3NC05NGVhNDU4YmE5Y2YifQ.tpbV4KNn2xLCZ0EtCvMZvyAb5nSXu6RSvJKGQ05TPl4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\":\"Ini diskon baru\",\n    \"pct\":11\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/discount/register",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"discount",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

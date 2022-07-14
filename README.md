@@ -1,29 +1,39 @@
 # livecode-gorm-wmb
 
 ## Requirement
-Aplikasi dapat melakukan:
+[LIVECODE] WMB 2.0
+1. Untuk memberikan opsi metoda bayar dan memudahkan pembayaran pelanggannya, Warung Makan Bahari akan bekerja sama dengan salah satu payment gateway Lopei. Tim Software Developer WMB diminta untuk melakukan pengembangan aplikasi yang sekarang untuk bisa terintegrasi dengan Lopei Payment Gateway. 
+   Alur proses pembayaran yang baru adalah 
+     - pelanggan ditawarkan opsi pembayaran, tunai atau Lopei (tidak bisa split payment, pilih salah satu), 
+     - Untuk pembayaran Lopei, pelanggan diminta memasukkan ID yang terdaftar kemudian masukan jumlah tagihan makan.
+     - Setelah sukses pembayaran, struk akan tercetak, tabel meja akan diubah status nya menjadi kosong
+   Catatan : Gunakan gRPC Lopei Server sebagai server payment gateway, tambahkan table untuk kebutuhan informasi pembayaran di API WMB POS, lalu integrasikan gRPC client nya
 
-    Management data master menu (CRUD) 
-    Management data master menu price (CRUD)
-    Management data master table (CRUD)
-    Management data master trans type (CRUD)
-    Management data master discount (CRUD)
-    Melakukan customer registration
-    Melakukan aktivasi member customer yang sudah terdaftar sekaligus memberikan privilege discount
-    Melakukan transaksi penjualan dengan validasi apabila meja sudah dipakai tidak bisa dibuat bill
-    Mencetak bill berdasarkan bill_id, sekaligus melakukan update meja menjadi available
-    Memberikan informasi total penjualan harian
+2. Top Manajemen WMB juga sedang mempertimbangkan untuk membuat aplikasi mobile Self Service POS untuk pelanggannya, sehingga proses transaksi akan semakin mudah. Oleh karena itu untuk meningkatkan keamanan API WMB POS,  Implementasikan JWT untuk memproteksi API
 
-Output
-Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan file tersendiri, dengan hasil sebagai berikut:
+3. Implementasikan Unit Testing untuk API WMB POS
 
-++++++ Soal No 1 ++++++
+repo: livecode-wmb-2
+deadline: Kamis, 14 Juli 2022 | 21:00 WIB
 
-> Create Customer
+## Key Notes
+``` 
+1. protobuf file adjustmen
+int32 lopeiId -> string lopeiId
+float amount -> double amount
 
-> List / Get Customer
+2. grpc server data type adjustment
+type Customer struct {
+	LopeiId 	string
+	Balance     float64
+}
 
-> dst…
+3. server repository addition
+return error if id/phoneNumber not found
+```
+
+## ENV
+``` change .env.example to .env ```
 
 ## Run DB Migrate
 ``` go run . db:migrate ```
@@ -33,15 +43,71 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
 
 ## API Spec
 
-### Get Menu
-- Request: GET
-- Endpoint : `/menu/`
+### Register User
+- Request: POST
+- Endpoint : `/auth/register`
 - Body : 
 ```json
 {
-    "id":2
+    "user_name":"angga21",
+    "user_password":"passwordangga",
+    "customer_name":"Angga",
+    "mobile_phone_no":"081245340921",
+    "email":"angga@mail.com"
 }
 ```
+- Response:
+```json
+{
+    "response_code": "00",
+    "response_message": "success",
+    "data": {
+        "ID": 6,
+        "CreatedAt": "2022-07-14T23:14:07.852029088+07:00",
+        "UpdatedAt": "2022-07-14T23:14:07.852029088+07:00",
+        "DeletedAt": null,
+        "CustomerName": "Angga",
+        "MobilePhoneNo": "081245340921",
+        "IsMember": false,
+        "Discounts": null,
+        "Bills": null,
+        "UserCredential": {
+            "ID": 0,
+            "CreatedAt": "0001-01-01T00:00:00Z",
+            "UpdatedAt": "0001-01-01T00:00:00Z",
+            "DeletedAt": null,
+            "UserName": "",
+            "UserPassword": "",
+            "Email": "",
+            "CustomerID": 0
+        }
+    }
+}
+  ```
+
+### Login
+- Request: POST
+- Endpoint : `/auth/login`
+- Body : 
+```json
+{
+    "UserName":"angga21",
+    "UserPassword":"passwordangga"
+}
+```
+- Response:
+```json
+{
+    "response_code": "00",
+    "response_message": "success",
+    "data": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTc4MTU5MDYsImlhdCI6MTY1NzgxNTMwNiwiaXNzIjoiV01fQkFIQVJJIiwidXNlck5hbWUiOiIiLCJFbWFpbCI6IiIsImFjY2Vzc1VVSUQiOiJlZWZkYzE4MC0wMjgzLTQwNjYtYmQ5Zi0xZjNmZGM5MzI1Y2QifQ.po7yaLjPN8zvYkRlDUQ5WS4ootbaSIvF8G0kwh49c14"
+}
+  ```
+
+### Get Menu
+- Request: GET
+- Endpoint : `/menu/:id`
+- Variable : number
 - Response:
 ```json
   "data": {
@@ -66,7 +132,7 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
 
 ### Update Menu
 - Request: PUT
-- Endpoint : `/menu/`
+- Endpoint : `/menu/update`
 - Scheme : update name, update price
 - Body : 
 ```json
@@ -100,17 +166,12 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
 
 ### Delete Menu
 - Request: DELETE
-- Endpoint : `/menu/`
-- Body : 
-```json
-{
-    "id":2
-}
-```
+- Endpoint : `/menu/:id`
+- Variable : number
 
 ### Create Menu
 - Request: POST
-- Endpoint : `/menu/`
+- Endpoint : `/menu/register`
 - Body : 
 ```json
 {
@@ -142,7 +203,7 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
 
 ### Update Customer
 - Request: PUT
-- Endpoint : `/customer/`
+- Endpoint : `/customer/update`
 - Scheme : update name, update phone number, activate member, add discount
 - Body : 
 ```json
@@ -157,7 +218,7 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
 
 ### Create Customer
 - Request: POST
-- Endpoint : `/customer/`
+- Endpoint : `/customer/register`
 - Body : 
 ```json
 {
@@ -168,7 +229,7 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
 
 ### Update Table
 - Request: PUT
-- Endpoint : `/table/`
+- Endpoint : `/table/update`
 - Scheme : update description, update availability
 - Body : 
 ```json
@@ -181,7 +242,7 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
 
 ### Create Table
 - Request: POST
-- Endpoint : `/table/`
+- Endpoint : `/table/register`
 - Body : 
 ```json
 {
@@ -191,7 +252,7 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
 
 ### Update Discount
 - Request: PUT
-- Endpoint : `/discount/`
+- Endpoint : `/discount/update`
 - Scheme : update description, update discount value
 - Body : 
 ```json
@@ -204,7 +265,7 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
 
 ### Create Discount
 - Request: POST
-- Endpoint : `/discount/`
+- Endpoint : `/discount/register`
 - Body : 
 ```json
 {
@@ -215,23 +276,13 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
 
 ### Get Customer - Get Table - Get Discount
 - Request: GET
-- Endpoint : `/customer/` `/table/` `/discount/`
-- Body : 
-```json
-{
-    "id":2
-}
-```
+- Endpoint : `/customer/:id` `/table/:id` `/discount/:id`
+- Variable : number
 
 ### Delete Customer - Delete Table - Delete Discount
 - Request: DELETE
-- Endpoint : `/customer/` `/table/` `/discount/`
-- Body : 
-```json
-{
-    "id":2
-}
-```
+- Endpoint : `/customer/:id` `/table/:id` `/discount/:id`
+- Variable : number
 
 ### Create Transaction
 - Request: POST
@@ -266,13 +317,15 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
 }
   ```
 
-### Print Bill
-- Request: GET
-- Endpoint : `/transaction/print`
+### Pay and Finish Bill
+- Request: POST
+- Endpoint : `/payment/pay`
+- Scheme Payment Method : "cash" OR "lopei"
 - Body : 
 ```json
 {
-    "id":5
+    "BillId":3,
+    "PaymentMethod":"lopei"
 }
 ```
 - Response:
@@ -281,24 +334,24 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
     "response_code": "00",
     "response_message": "success",
     "data": {
-        "bill_id": 5,
-        "transaction_date": "6 Jul 2022 20:54:04",
+        "bill_id": 3,
+        "transaction_date": "14 Jul 2022 20:54:18",
         "customer_name": "Devi",
         "transaction_type": "Dine In",
-        "table_number": "2",
-        "grand_total": 6500,
+        "table_number": "3",
+        "grand_total": 65000,
         "order_menu": [
             {
                 "menu_name": "Nasi Putih",
                 "menu_price": 5000,
-                "qty": 1,
-                "subtotal": 5000
+                "qty": 10,
+                "subtotal": 50000
             },
             {
                 "menu_name": "Es Teh Tawar",
                 "menu_price": 1500,
-                "qty": 1,
-                "subtotal": 1500
+                "qty": 10,
+                "subtotal": 15000
             }
         ]
     }
@@ -322,6 +375,28 @@ Dibuatkan urutan untuk melakukan run aplikasi boleh di app.go atau dibuatkan fil
     "data": {
         "transaction_date": "2022-07-06",
         "total_revenue": 31070
+    }
+}
+  ```
+
+### Check Balance
+- Request: GET
+- Endpoint : `/transaction/payment/balance`
+- Body : 
+```json
+{
+    "MobilePhoneNo":"0877745983"
+}
+```
+- Response:
+```json
+{
+    "response_code": "00",
+    "response_message": "success",
+    "data": {
+        "CustomerName": "Devi",
+        "MobilePhoneNo": "0877745983",
+        "Balance": 50000
     }
 }
   ```
